@@ -1,12 +1,14 @@
 package com.example.femida_v4.service;
 
 import com.example.femida_v4.configuration.BotConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Slf4j
 @Component
 public class TelegramFemidaBot extends TelegramLongPollingBot
 {
@@ -17,20 +19,24 @@ public class TelegramFemidaBot extends TelegramLongPollingBot
 	{
 		this.config = config;
 	}
+	
 	@Override
 	public void onUpdateReceived(Update update)
 	{
-		System.out.println("Text: " + update.getMessage().getText());
+		Answer answer = new Answer(update);
+		
 		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId(update.getMessage().getChatId());
-		sendMessage.setText(update.getMessage().getText());
+		sendMessage.setChatId(answer.getChatID());
+		sendMessage.setText(answer.getText());
 		
 		try
 		{
+			log.info("Massage sent: " + answer.getText());
 			execute(sendMessage);
 		}
 		catch(TelegramApiException e)
 		{
+			log.error("Error: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}

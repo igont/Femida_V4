@@ -12,6 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
+Femida_V4.jar
 
 ### IntelliJ IDEA ###
 .idea
