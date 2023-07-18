@@ -2,23 +2,20 @@ package com.example.femida_v4.service.Dialogue;
 
 import com.example.femida_v4.service.Answer;
 
-import java.util.List;
-
 public abstract class Stage
 {
-	private List<Stage> nextStages;
-	private Answer answer;
+	protected Answer answer;
 	
-	public boolean check(Answer answer)
+	public Stage init(Answer answer) // Запуск работы всей стадии
 	{
 		this.answer = answer;
 		
-		checkNextStages();
-		return true;
+		stageStartActions();
+		
+		return checkNextStages();
 	}
 	
-	private void checkNextStages()
-	{
+	protected abstract void stageStartActions(); // Запуск действий при переходе на эту стадию
 	
-	}
+	protected abstract Stage checkNextStages(); // Проверка на возможность перехода к следующим стадиям
 }

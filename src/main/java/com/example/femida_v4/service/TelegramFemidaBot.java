@@ -1,12 +1,14 @@
 package com.example.femida_v4.service;
 
 import com.example.femida_v4.configuration.BotConfig;
+import com.example.femida_v4.service.Dialogue.Dialogue;
+import com.example.femida_v4.service.User.User;
+import com.example.femida_v4.service.User.UserRegistration;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
 @Component
@@ -14,31 +16,24 @@ public class TelegramFemidaBot extends TelegramLongPollingBot
 {
 	
 	final BotConfig config;
+	final Dialogue dialogue;
 	
-	public TelegramFemidaBot(BotConfig config)
+	public TelegramFemidaBot(BotConfig config, Dialogue dialogue)
 	{
 		this.config = config;
+		this.dialogue = dialogue;
 	}
 	
 	@Override
 	public void onUpdateReceived(Update update)
 	{
+		
 		Answer answer = new Answer(update);
+		UserRegistration userRegistration = new UserRegistration();
+		userRegistration.register(new User(answer));
 		
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setChatId(answer.getChatID());
-		sendMessage.setText(answer.getText());
-		
-		try
-		{
-			log.info("Massage sent: " + answer.getText());
-			execute(sendMessage);
-		}
-		catch(TelegramApiException e)
-		{
-			log.error("Error: " + e.getMessage());
-			throw new RuntimeException(e);
-		}
+		dialogue.startIfNotStarted(userRegistration.activeUser);
+		dialogue.receiveAnswer(userRegistration.activeUser, answer);
 	}
 	
 	@Override

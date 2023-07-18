@@ -11,6 +11,7 @@ public class Answer
 	private final Update update;
 	private String text;
 	private Long chatID;
+	private String userName;
 	private Command command;
 	
 	public Answer(Update update)
@@ -19,8 +20,9 @@ public class Answer
 		
 		if(update.hasMessage())
 		{
-			text = update.getMessage().getText();
+			text = update.getMessage().getText().trim();
 			chatID = update.getMessage().getChatId();
+			userName = update.getMessage().getFrom().getUserName();
 		}
 		
 		if(update.hasCallbackQuery())
